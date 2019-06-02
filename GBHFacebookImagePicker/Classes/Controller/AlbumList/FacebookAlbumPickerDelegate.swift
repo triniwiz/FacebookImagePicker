@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol FacebookAlbumPickerDelegate: class {
+@objc protocol FacebookAlbumPickerDelegate: class {
     func didSelectAlbum(album: FacebookAlbum)
 }

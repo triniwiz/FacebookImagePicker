@@ -7,35 +7,36 @@
 
 import UIKit
 
-/// Simple struct to hold settings 
-public struct FacebookPickerConfig {
+/// Simple struct to hold settings
+@objcMembers
+public class FacebookPickerConfig: NSObject {
 
     // MARK: - Configurable
 
-    /// Sub-stuct holding configuration relevant to UI presentation ! 
-    public struct UIConfig {
+    /// Sub-stuct holding configuration relevant to UI presentation !
+    public class UIConfig: NSObject {
         /// Statusbar style
         public var statusbarStyle: UIStatusBarStyle = .default
 
-        /// Will be applied to the navigation bar 
+        /// Will be applied to the navigation bar
         public var navBarTintColor: UIColor?
 
-        /// Will be applied to navigation bar title color 
+        /// Will be applied to navigation bar title color
         public var navTitleColor: UIColor?
 
-        /// Will be applied to navigation bar tintColor  
+        /// Will be applied to navigation bar tintColor
         public var navTintColor: UIColor?
 
-        /// Will be applied to the navigation bar 
+        /// Will be applied to the navigation bar
         public var backgroundColor: UIColor = .white
 
-        /// Will be applied to the navigation bar 
+        /// Will be applied to the navigation bar
         public var closeButtonColor: UIColor?
 
-        /// Will be applied to album's title color 
+        /// Will be applied to album's title color
         public var albumsTitleColor: UIColor?
 
-        /// Will be applied to album's pictures number 
+        /// Will be applied to album's pictures number
         public var albumsCountColor: UIColor?
 
         /// Show check view
@@ -58,34 +59,34 @@ public struct FacebookPickerConfig {
 
     }
 
-    public struct TextConfig {
+    public class TextConfig: NSObject {
         /// Will be applied to the album's navigation bar title
         public var localizedTitle: String = NSLocalizedString("Album(s)", comment: "")
-        
+
         /// Tagged album name
         public var localizedTaggedAlbumName: String = NSLocalizedString("Photos of You", comment: "")
-        
+
         /// Name for Pictures
         public var localizedPictures: String = NSLocalizedString("Pictures", comment: "")
-        
+
         /// Name for title in popup
         public var localizedOups: String = NSLocalizedString("Oups", comment: "")
-        
+
         /// Name for need photo permission in popup
         public var localizedAllowPhotoPermission: String = NSLocalizedString("You need to allow photo's permission.", comment: "")
-        
+
         /// Name for allow in popup
         public var localizedAllow: String =  NSLocalizedString("Allow", comment: "")
-        
+
         /// Name for close in popup
         public var localizedClose: String =  NSLocalizedString("Close", comment: "")
-        
+
         /// Naviagtion bar button name
         public var localizedSelect: String = NSLocalizedString("Select", comment: "")
-        
+
         /// Name for Select all
         public var localizedSelectAll: String = NSLocalizedString("Select all", comment: "")
-        
+
         /// Name for no pictures in the albue
         public var localizedNoPicturesInAlbum: String = NSLocalizedString("No picture in this album.", comment: "")
     }
@@ -95,7 +96,7 @@ public struct FacebookPickerConfig {
 
     /// Tap animation
     public var performTapAnimation: Bool = true
-    
+
     /// Allow multiple pictures selection
     public var allowAllSelection: Bool = false
 
@@ -105,10 +106,10 @@ public struct FacebookPickerConfig {
     /// Number of picture per row
     public var picturePerRow: CGFloat = 4.0
 
-    /// Space beetween cell 
+    /// Space beetween cell
     public var cellSpacing: CGFloat = 1.5
 
-    /// Display tagged album 
+    /// Display tagged album
     public var displayTaggedAlbum: Bool = false
 
     /// UI-specific configuration.

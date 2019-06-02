@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol FacebookAlbumDetailPickerDelegate: class {
+@objc protocol FacebookAlbumDetailPickerDelegate: class {
     func didSelectImages(images: [FacebookImage])
     func didPressFinishSelection(images: [FacebookImage])
 }

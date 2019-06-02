@@ -9,83 +9,84 @@ import Foundation
 import FBSDKLoginKit
 import FBSDKCoreKit
 
-final class FacebookController {
-    
-    // MARK: - Singleton 
-    
+@objcMembers
+final class FacebookController: NSObject {
+
+    // MARK: - Singleton
+
     static let shared = FacebookController()
-    
+
     // MARK: - Var
-    
+
     fileprivate var albumList: [FacebookAlbum] = []
-    
+
     fileprivate var pictureUrl = "https://graph.facebook.com/%@/picture?type=small&access_token=%@"
-    
+
     static let idTaggedPhotosAlbum = "idPhotosOfYouTagged"
-    
+
     fileprivate var profilePictureUrl: String?
-    
-    /// Boolean to check if we have already added the tagged album, prevent multiple addition when fetching next cursor 
+
+    /// Boolean to check if we have already added the tagged album, prevent multiple addition when fetching next cursor
     fileprivate var alreadyAddTagged: Bool = false
-    
+
     // MARK: - Retrieve Facebook's Albums
-    
+
     /// Make GRAPH API's request for user's album
     ///
     /// - Parameter after: after page identifier (optional)
     internal func fetchFacebookAlbums(after: String? = nil,
                                       completion: (([FacebookAlbum]) -> Void)? = nil) {
-        
+
         // Build path album request
         var  path = "me/albums?fields=id,name,count,cover_photo"
         if let afterPath = after {
             path = path.appendingFormat("&after=%@", afterPath)
         }
-        
+
         // Build Facebook's request
         let graphRequest = GraphRequest(graphPath: path, parameters: [:])
-        
+
         // Start Facebook Request
         graphRequest.start { [weak self] _, result, error in
             guard let selfStrong = self else { return }
-            
+
             if error != nil {
                 print(error.debugDescription)
                 return
             } else {
                 // Try to parse request's result
                 if let fbResult = result as? [String: AnyObject] {
-                    
+
                     // Parse Album
                     selfStrong.parseFbAlbumResult(fbResult: fbResult)
-                    
-                    // Add tagged album if needed 
+
+                    // Add tagged album if needed
                     if FacebookImagePicker.pickerConfig.displayTaggedAlbum
                         && selfStrong.alreadyAddTagged == false {
-                        
-                        // Create tagged album 
+
+                        // Create tagged album
                         let taggedPhotosAlbum = FacebookAlbum(
                             name: FacebookImagePicker.pickerConfig.textConfig.localizedTaggedAlbumName,
                             albmId: FacebookController.idTaggedPhotosAlbum
                         )
-                        
-                        // Add to albums 
+
+                        // Add to albums
                         selfStrong.albumList.insert(taggedPhotosAlbum, at: 0)
-                        
-                        // Update flag 
+
+                        // Update flag
                         selfStrong.alreadyAddTagged = true
                     }
-                    
+
                     // Try to find next page
                     if let paging = fbResult["paging"] as? [String: AnyObject],
                         paging["next"] != nil,
                         let cursors = paging["cursors"] as? [String: AnyObject],
                         let after = cursors["after"] as? String {
-                        
+
                         // Restart album request for next page
                         selfStrong.fetchFacebookAlbums(after: after, completion: completion)
                     } else {
-                        
+
                         print("Found \(selfStrong.albumList.count) album(s) with this Facebook account.")
                         completion?(selfStrong.albumList)
                     }
@@ -93,24 +94,24 @@ final class FacebookController {
             }
         }
     }
-    
+
     /// Parsing GRAPH API result for user's album in FacebookAlbumModel array
     ///
     /// - Parameter fbResult: result of the Facebook's graph api
     fileprivate func parseFbAlbumResult(fbResult: [String: AnyObject]) {
         if let albumArray = fbResult["data"] as? [AnyObject] {
-            
+
             // Parsing user's album
             for album in albumArray {
                 if let albumDic = album as? [String: AnyObject],
                     let albumName = albumDic["name"] as? String,
                     let albumId = albumDic["id"] as? String,
                     let albumCount = albumDic["count"] as? Int {
-                    
+
                     // Album's cover url
                     let token = AccessToken.current?.tokenString ?? ""
                     let albumUrlPath = String(format: self.pictureUrl, albumId, token)
-                    
+
                     // Build Album model
                     if let coverUrl = URL(string: albumUrlPath) {
                         let albm = FacebookAlbum(name: albumName,
@@ -123,9 +124,9 @@ final class FacebookController {
             }
         }
     }
-    
+
     // MARK: - Retrieve Facebook's Picture
-    
+
     /// Make GRAPH API's request for album's pictures
     ///
     /// - Parameters:
@@ -134,7 +135,7 @@ final class FacebookController {
     func fbAlbumsPictureRequest(after: String? = nil,
                                 album: FacebookAlbum,
                                 completion: ((FacebookAlbum) -> Void)? = nil) {
-        
+
         // Build path album request
         guard let identifier = album.albumId else {
             return
@@ -145,14 +146,14 @@ final class FacebookController {
         if let afterPath = after {
             path = path.appendingFormat("&after=%@", afterPath)
         }
-        
+
         // Build Facebook's request
         let graphRequest = GraphRequest(graphPath: path, parameters: [:])
-        
+
         // Start Facebook's request
         _ = graphRequest.start { [weak self] _, result, error in
             guard let selfStrong = self else { return }
-            
+
             if error != nil {
                 print(error.debugDescription)
                 return
@@ -163,13 +164,13 @@ final class FacebookController {
                     //print(fbResult)
                     selfStrong.parseFbPicture(fbResult: fbResult,
                                               album: album)
-                    
+
                     // Try to find next page
                     if let paging = fbResult["paging"] as? [String: AnyObject],
                         paging["next"] != nil,
                         let cursors = paging["cursors"] as? [String: AnyObject],
                         let after = cursors["after"] as? String {
-                        
+
                         // Restart album request for next page
                         selfStrong.fbAlbumsPictureRequest(after: after, album: album, completion: completion)
                     } else {
@@ -181,7 +182,7 @@ final class FacebookController {
             }
         }
     }
-    
+
     /// Parsing GRAPH API result for album's picture in FacebookAlbumModel
     ///
     /// - Parameters:
@@ -190,14 +191,14 @@ final class FacebookController {
     fileprivate func parseFbPicture(fbResult: [String: AnyObject],
                                     album: FacebookAlbum) {
         if let photosResult = fbResult["data"] as? [AnyObject] {
-            
+
             // Parsing album's picture
             for photo in photosResult {
                 if let photoDic = photo as? [String: AnyObject],
                     let identifier = photoDic["id"] as? String,
                     let picture = photoDic["picture"] as? String,
                     let source = photoDic["source"] as? String {
-                    
+
                     // Build Picture model
                     let photoObject = FacebookImage(picture: picture,
                                                     imgId: identifier,
@@ -207,34 +208,34 @@ final class FacebookController {
             }
         }
     }
-    
+
     // MARK: - Logout
-    
+
     /// Logout with clear session, token & user's album
     fileprivate func logout() {
         LoginManager().logOut()
     }
-    
+
     // MARK: - Login
-    
+
     /// Start login with the Facebook SDK
     ///
     /// - parameters vc: source controller
     /// - parameters completion: (success , error if needed)
     internal func login(controller: UIViewController,
                         completion: @escaping (Bool, LoginError?) -> Void) {
-        
+
         self.albumList = [] // Clear Album
-        
+
         if AccessToken.current == nil {
             // No token, we need to log in
-            
+
             // Start Facebook's login
             let loginManager = LoginManager()
             loginManager.logIn(permissions: ["user_photos"], from: controller) { [weak self] (response, error) in
-                
+
                 guard let selfStrong = self else { return }
-                
+
                 if error != nil {
                     // Failed
                     print("Failed to login")
@@ -284,10 +285,10 @@ final class FacebookController {
             }
         }
     }
-    
+
     func getProfilePicture(_ completion: @escaping ((Bool, String?) -> Void)) {
         if let profilUrl = self.profilePictureUrl {
-            // Return saved url 
+            // Return saved url
             completion(true, profilUrl)
         } else {
             // Retrieve profile url form Graph API
@@ -308,16 +309,16 @@ final class FacebookController {
                                 if let FBpictureData = result["picture"] as? [String: AnyObject],
                                     let FBpicData = FBpictureData["data"] as? [String: AnyObject],
                                     let FBPicUrl = FBpicData["url"] as? String {
-                                    
-                                    // Save url 
+
+                                    // Save url
                                     self.profilePictureUrl = FBPicUrl
-                                    
-                                    // Start completion 
+
+                                    // Start completion
                                     completion(true, FBPicUrl)
                                 }
                             }
                         }
-                        
+
                         completion(false, nil)
                     }
                 })
@@ -328,13 +329,13 @@ final class FacebookController {
             }
         }
     }
-    
-    /// Reset manager 
+
+    /// Reset manager
     func reset() {
-        // Reset tagged flag 
+        // Reset tagged flag
         self.alreadyAddTagged = false
-        
-        // Reset profil picture url 
+
+        // Reset profil picture url
         self.profilePictureUrl = nil
     }
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 
+@objcMembers
 public class FacebookImagePicker: NSObject {
 
     // Picker configuration settings

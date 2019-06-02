@@ -5,7 +5,8 @@
 //  Created by Florian Gabach on 29/09/2016.
 //  Copyright (c) 2016 Florian Gabach <contact@floriangabach.fr>
 
-class FacebookAlbum {
+@objcMembers
+class FacebookAlbum:NSObject {
 
     // MARK: - Var
 
@@ -31,8 +32,8 @@ class FacebookAlbum {
     /// - Parameters:
     ///   - name: the album's name
     ///   - count: the number of picture in the album
-    ///   - coverUrl: the string url of the cover picture 
-    ///   - albmId: the album id 
+    ///   - coverUrl: the string url of the cover picture
+    ///   - albmId: the album id
     init(name: String,
          count: Int? = nil,
          coverUrl: URL? = nil,

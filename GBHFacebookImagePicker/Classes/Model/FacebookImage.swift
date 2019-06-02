@@ -10,7 +10,8 @@ public enum ImageSize {
     case full
 }
 
-public class FacebookImage {
+@objcMembers
+public class FacebookImage: NSObject {
 
     // MARK: - Var
 
@@ -31,9 +32,9 @@ public class FacebookImage {
     /// Initialize Image model from informations retrieve from the graph API
     ///
     /// - Parameters:
-    ///   - picture: the image string url for the default size 
-    ///   - imgId: the image id 
-    ///   - source: the image string url for the full size 
+    ///   - picture: the image string url for the default size
+    ///   - imgId: the image id
+    ///   - source: the image string url for the full size
     init(picture: String, imgId: String, source: String) {
         self.imageId = imgId
         self.normalSizeUrl = picture
@@ -44,7 +45,7 @@ public class FacebookImage {
 
     /// Download the image
     ///
-    /// - Parameter completion: completion handler with optional error 
+    /// - Parameter completion: completion handler with optional error
     internal func download(completion: @escaping (Error?) -> Void) {
         guard let stringUrl = self.fullSizeUrl,
             let url = URL(string: stringUrl) else {

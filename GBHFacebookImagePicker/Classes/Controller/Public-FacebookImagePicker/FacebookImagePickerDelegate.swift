@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol FacebookImagePickerDelegate: class {
+@objc public protocol FacebookImagePickerDelegate: class {
 
     /// Called when one or more images are picked
     ///
@@ -20,7 +20,7 @@ public protocol FacebookImagePickerDelegate: class {
         imagePicker: UIViewController,
         successImageModels: [FacebookImage],
         errorImageModels: [FacebookImage],
-        errors: [Error?]
+        errors: NSArray
     )
 
     /// Called when facebook picker failed
@@ -43,10 +43,10 @@ public protocol FacebookImagePickerDelegate: class {
 // Extension to make some method optional...
 public extension FacebookImagePickerDelegate {
     func facebookImagePickerDismissed() {
-        // Override in your controller to make your own implementation ! 
+        // Override in your controller to make your own implementation !
     }
 
     func facebookImagePicker(didCancelled imagePicker: UIViewController) {
-        // Override in your controller to make your own implementation ! 
+        // Override in your controller to make your own implementation !
     }
 }
