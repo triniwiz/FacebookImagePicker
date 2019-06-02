@@ -144,7 +144,7 @@ extension FacebookAlbumController: FacebookAlbumDetailPickerDelegate {
     func didSelectImages(images: [FacebookImage]) {
         var successModels = [FacebookImage]()
         var errorModels = [FacebookImage]()
-        var errors = NSMutableArray()
+        let errors = NSMutableArray()
 
         let downloadGroup = DispatchGroup()
 
@@ -153,7 +153,7 @@ extension FacebookAlbumController: FacebookAlbumDetailPickerDelegate {
 
             imageModel.download(completion: { (error) in
                 if error != nil {
-                    errors.add(error)
+                    errors.add(error as Any)
                     errorModels.append(imageModel)
                 } else {
                     successModels.append(imageModel)
